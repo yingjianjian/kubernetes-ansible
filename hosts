@@ -1,0 +1,4 @@
+[etcd]
+master-1 ansible_ssh_host=192.168.199.127 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
+master-2 ansible_ssh_host=192.168.199.180 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-3 ansible_ssh_host=192.168.199.216 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false

@@ -1,0 +1,64 @@
+- name: create "{{ CAPATH }}"
+  file:
+    path: "{{ CAPATH }}"
+    state: directory
+- name: scp cfssl to dest
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0744
+    force: yes
+  with_items:
+    - { src: 'cfssl-certinfo_linux-amd64', dest: '/usr/local/bin/cfssl-certinfo'  }
+    - { src: 'cfssljson_linux-amd64' , dest: '/usr/local/bin/cfssljson' }
+    - { src: 'cfssl_linux-amd64' , dest: '/usr/local/bin/cfssl' }
+    - { src: 'ca-config.json' , dest: "{{ CAPATH }}/ca-config.json" }
+    - { src: 'ca-csr.json' , dest: "{{ CAPATH }}/ca-csr.json" }
+  when: cfsssl
+
+- name: configuration /etc/profile file
+  shell: /bin/echo export PATH=/usr/local/bin:\$PATH >> /etc/profile;source /etc/profile
+  when: cfsssl
+
+- name: copy etcd csr Files
+  template: src=etcd-csr.j2 dest="{{ CAPATH }}/etcd-csr.json"
+  when: cfsssl
+
+- name: gencert CA ssl
+  shell: "cd {{ CAPATH }} && cfssl gencert -initca ca-csr.json | cfssljson -bare ca"
+  when: cfsssl
+
+- name: gencert CA ssl -1
+  shell: "cd {{ CAPATH }} && cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes-Soulmate etcd-csr.json | cfssljson -bare etcd"
+  when: cfsssl
+#- name:  move ca to dest dir 
+#  copy:
+#    src: "{{ item.src }}"
+#    dest: "{{ item.dest }}"
+#  with_items:
+#    - { src: "{{ CAPATH }}/etcd.pem", dest: "{{ CAPATH }}/etcd.pem"  }
+#    - { src: "{{ CAPATH }}/etcd-key.pem", dest: "{{ CAPATH }}/etcd-key.pem"  }
+#    - { src: "{{ CAPATH }}/ca.pem", dest: "{{ CAPATH }}/ca.pem"  }
+#  when: cfsssl
+- name: fetch gencert to server
+  fetch:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    flat: yes
+  with_items:
+    - { src: "{{ CAPATH }}/etcd.pem", dest: "/tmp/"  }
+    - { src: "{{ CAPATH }}/etcd-key.pem", dest: "/tmp/"  }
+    - { src: "{{ CAPATH }}/ca.pem", dest: "/tmp/"  }
+  when: cfsssl
+
+- name: scp CA pem to dest
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0744
+    force: yes
+  with_items:
+    - { src: "/tmp/etcd.pem", dest: "{{ CAPATH }}/etcd.pem"  }
+    - { src: "/tmp/etcd-key.pem", dest: "{{ CAPATH }}/etcd-key.pem"  }
+    - { src: "/tmp/ca.pem", dest: "{{ CAPATH }}/ca.pem"  }
+

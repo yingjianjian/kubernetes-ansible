@@ -1,0 +1,11 @@
+---
+    - hosts: etcd
+      vars: 
+          AAAA: "{% for host in groups['etcd'] %}{{ host }}=https://{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}:2380{%- if not loop.last -%},{% endif %}{% endfor %}"
+          BBBB: "{{ inventory_hostname  }}{{ cfsssl }}"
+      tasks:
+        - debug: msg="{{ AAAA }}"
+        - debug: msg="{{ BBBB }}"
+        - name: scp etcd.tar.gz to dest
+          copy: 'src=1.yml dest=/tmp/2.yml '
+
