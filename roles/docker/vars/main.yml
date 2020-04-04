@@ -1,0 +1,2 @@
+REGISTRY: "https://registry.docker-cn.com"
+DOCKERDIR: "/data/docker"

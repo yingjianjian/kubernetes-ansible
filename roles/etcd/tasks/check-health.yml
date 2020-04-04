@@ -1,0 +1,7 @@
+- name: check etcd cluster health
+  shell:  etcdctl --ca-file=/etc/etcd/ssl/ca.pem   --cert-file=/etc/etcd/ssl/etcd.pem   --key-file=/etc/etcd/ssl/etcd-key.pem member list
+  register: result
+  until: result.rc == 0
+  retries: 5
+  delay: 10
+

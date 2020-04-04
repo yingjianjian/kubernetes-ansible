@@ -1,0 +1,31 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+
+[Service]
+#Type=simple
+Type=notify
+WorkingDirectory={{ ETCDDATADIR }}
+EnvironmentFile=-{{ CONFIGPATH }}etcd.conf
+ExecStart=/usr/bin/etcd  \
+    --name {{ ETCDNODENAME }}   \
+    --cert-file={{ CAPATH }}etcd.pem   \
+    --key-file={{ CAPATH }}etcd-key.pem   \
+    --peer-cert-file={{ CAPATH }}etcd.pem   \
+    --peer-key-file={{ CAPATH }}etcd-key.pem   \
+    --trusted-ca-file={{ CAPATH }}ca.pem   \
+    --peer-trusted-ca-file={{ CAPATH }}ca.pem   \
+    --initial-advertise-peer-urls https://{{ ETCDNODEIP }}:{{ PERRPORT }}   \
+    --listen-peer-urls https://{{ ETCDNODEIP }}:{{ PERRPORT }}   \
+    --listen-client-urls https://{{ ETCDNODEIP }}:{{ CLIENTPORT }},http://127.0.0.1:{{ CLIENTPORT }}   \
+    --advertise-client-urls https://{{ ETCDNODEIP }}:{{ CLIENTPORT }}   \
+    --initial-cluster-token {{ ETCDCLUSTERTOKEN }}   \
+    --initial-cluster {{ ETCDCLUSTER }}   \
+    --initial-cluster-state new   \
+    --data-dir={{ ETCDDATADIR }}
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

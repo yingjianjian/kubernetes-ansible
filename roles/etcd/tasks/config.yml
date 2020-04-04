@@ -1,0 +1,11 @@
+- name: create etcd data
+  file:
+    path: "{{ ETCDDATADIR }}"
+    state: directory
+- name: copy etcd service Files
+  template: src=etcd.service.j2 dest=/usr/lib/systemd/system/etcd.service 
+- name: reload etcd
+  shell: systemctl daemon-reload 
+- name: Restart etcd
+  service: name=etcd state=restarted enabled=yes
+  tags: restartEtcd

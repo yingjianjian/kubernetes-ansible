@@ -1,0 +1,21 @@
+- name: install keepalived
+  yum: name=keepalived state=latest
+
+- name: scp config file to dest
+  template: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+  - { src: 'keepalived.j2',dest: '/etc/keepalived/keepalived.conf' }
+  - { src: 'check_health.j2',dest: '/etc/keepalived/check_health.sh' }
+
+- name: start keepalived
+  systemd:
+    name: keepalived
+    enabled: yes
+    state: restarted
+
+- name: check VIP is up
+  wait_for:
+    host: "{{ VIP }}"
+    delay: 10
+    port: 22
+  connection: local   

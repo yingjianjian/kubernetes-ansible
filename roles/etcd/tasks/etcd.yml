@@ -1,0 +1,5 @@
+- name: copy etcd.tar.gz to dest
+  copy: src="{{ role_path }}/files/etcd-v3.2.20-linux-amd64.tar.gz"  dest="/tmp/etcd-v3.2.20-linux-amd64.tar.gz"
+- name: mv etcdctl etcd to /usr/bin
+  shell: tar -zxvf /tmp/etcd-v3.2.20-linux-amd64.tar.gz -C /tmp; mv /tmp/etcd-v3.2.20-linux-amd64/etcdctl /usr/bin ;  mv /tmp/etcd-v3.2.20-linux-amd64/etcd /usr/bin
+  

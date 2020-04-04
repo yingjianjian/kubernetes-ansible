@@ -1,0 +1,15 @@
+- name: create docker daemon dir
+  file:
+    path: "/etc/docker"
+    state: directory
+
+- name: add docker repository
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+- name: yum docker
+  yum: name=docker-ce
+
+- name: copy docker daemon to dest
+  template: src=daemon.j2 dest=/etc/docker/daemon.json
+  notify:
+    - restart docker
