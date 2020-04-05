@@ -1,12 +1,12 @@
 [etcd]
-master-1 ansible_ssh_host=192.168.17.128 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
-master-2 ansible_ssh_host=192.168.17.131 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
-master-3 ansible_ssh_host=192.168.17.132 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-1 ansible_ssh_host=10.30.30.35 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
+master-2 ansible_ssh_host=10.30.30.36 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-3 ansible_ssh_host=10.30.30.37 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
 [haproxy]
-master-1 ansible_ssh_host=192.168.17.128 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
-master-2 ansible_ssh_host=192.168.17.131 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
-master-3 ansible_ssh_host=192.168.17.132 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-1 ansible_ssh_host=10.30.30.35 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
+master-2 ansible_ssh_host=10.30.30.36 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-3 ansible_ssh_host=10.30.30.37 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
 [master]
-master-1 ansible_ssh_host=192.168.17.128 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
-master-2 ansible_ssh_host=192.168.17.131 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
-master-3 ansible_ssh_host=192.168.17.132 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-1 ansible_ssh_host=10.30.30.35 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
+master-2 ansible_ssh_host=10.30.30.36 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+master-3 ansible_ssh_host=10.30.30.37 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false

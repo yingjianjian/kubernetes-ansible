@@ -1,0 +1,1 @@
+KUBE_CONTROLLER_MANAGER_ARGS="--master=https://{{ VIP }}:6443  --service-account-private-key-file={{ KUBERNETESPATH }}/pki/server.key --logtostderr=true --log-dir={{ KUBELOGDIR }} --v=2 --root-ca-file={{ KUBERNETESPATH }}/pki/ca.crt --kubeconfig={{ KUBERNETESPATH }}/kubeconfig"

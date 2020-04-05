@@ -1,0 +1,7 @@
+CLUSTERIP: '10.222.0.1'
+CLUSTERIPRANGE: '10.222.0.0/16'
+KUBERNETESPATH: '/etc/kubernetes'
+DAY: '10000'
+DNSPIEFIX: 'cluster.local'
+APIETCDCACLUSTER: "{% for host in groups['etcd'] %}https://{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}:2379{%- if not loop.last -%},{% endif %}{% endfor %}"
+KUBELOGDIR: '/var/log/kubernetes'

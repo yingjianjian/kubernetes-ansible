@@ -1,0 +1,16 @@
+KUBE_API_ARGS="--storage-backend=etcd3 \
+               --etcd-servers={{ APIETCDCACLUSTER }} \
+               --bind-address=0.0.0.0 \
+               --secure-port=6443  \
+               --service-cluster-ip-range={{ CLUSTERIPRANGE }}  \
+               --service-node-port-range=1-65535 \
+               --client-ca-file={{ KUBERNETESPATH }}/pki/ca.crt \
+               --tls-private-key-file={{ KUBERNETESPATH }}/pki/server.key  \
+               --tls-cert-file={{ KUBERNETESPATH }}/pki/server.crt  \
+               --enable-admission-plugins=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,DefaultStorageClass,ResourceQuota \
+               --logtostderr=false \
+               --log-dir=/var/log/kubernetes \
+               --v=2" \
+               --etcd-cafile={{ CAPATH }}/ca.pem \
+               --etcd-certfile={{ CAPATH }}/etcd.pem \
+               --etcd-keyfile={{ CAPATH }}/etcd-key.pem

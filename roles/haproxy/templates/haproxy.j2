@@ -21,7 +21,8 @@ listen stats
 
 frontend api-https
    mode tcp
-   bind :6443
+   bind 0.0.0.0:{{ HAPORT }}
+   bind 127.0.0.1:{{ HAPORT }}
    default_backend api-backend
 
 backend api-backend

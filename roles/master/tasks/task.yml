@@ -1,0 +1,57 @@
+- name: create kubernetes log dir
+  file:
+    path: "{{ KUBELOGDIR }}"
+    state: directory
+
+- name: scp apiserver controller-manager scheduler service to dest
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "kube-apiserver.service",dest: "/usr/lib/systemd/system/kube-apiserver.service" }
+    - { src: "kube-controller-manager.service",dest: "/usr/lib/systemd/system/kube-controller-manager.service" }
+    - { src: "kube-scheduler.service",dest: "/usr/lib/systemd/system/kube-scheduler.service" }
+    - { src: "kubeconfig",dest: "{{ KUBERNETESPATH }}/kubeconfig" }
+
+- name: reload service config
+  shell: systemctl daemon-reload
+
+- name: scp config template to master
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "apiserver.j2",dest: "{{ KUBERNETESPATH }}/apiserver" }
+    - { src: "controller-manager.j2",dest: "{{ KUBERNETESPATH }}/controller-manager" }
+    - { src: "scheduler.j2",dest: "{{ KUBERNETESPATH }}/scheduler" }
+
+
+- name: scp master server to dest
+  unarchive:
+    src: kubernetes-server-linux-amd64.tar.gz
+    dest: /tmp/
+    copy: yes
+
+- name: mv bin to /usr/bin
+  shell: cp `ls|egrep -v "*.tar|*_tag"` /usr/bin/
+  args:
+   chdir: "/tmp/kubernetes/server/bin/"
+   executable: /bin/bash
+
+- name: restart apiserver 
+  service:
+    name: kube-apiserver
+    state: restarted
+    enabled: yes
+
+- name: restart kube-controller-manager
+  service:
+    name: kube-controller-manager
+    state: restarted
+    enabled: yes
+
+- name: restart kube-scheduler
+  service:
+    name: kube-scheduler
+    state: restarted
+    enabled: yes

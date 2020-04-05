@@ -25,21 +25,18 @@
   when: cfsssl
 
 - name: gencert CA ssl
-  shell: "cd {{ CAPATH }} && cfssl gencert -initca ca-csr.json | cfssljson -bare ca"
+  shell: "cfssl gencert -initca ca-csr.json | cfssljson -bare ca"
+  args:
+    chdir: "{{ CAPATH }}"
+    executable: /bin/bash
   when: cfsssl
 
 - name: gencert CA ssl -1
-  shell: "cd {{ CAPATH }} && cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes-Soulmate etcd-csr.json | cfssljson -bare etcd"
+  shell: "cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes-Soulmate etcd-csr.json | cfssljson -bare etcd"
+  args:
+    chdir: "{{ CAPATH }}"
+    executable: /bin/bash
   when: cfsssl
-#- name:  move ca to dest dir 
-#  copy:
-#    src: "{{ item.src }}"
-#    dest: "{{ item.dest }}"
-#  with_items:
-#    - { src: "{{ CAPATH }}/etcd.pem", dest: "{{ CAPATH }}/etcd.pem"  }
-#    - { src: "{{ CAPATH }}/etcd-key.pem", dest: "{{ CAPATH }}/etcd-key.pem"  }
-#    - { src: "{{ CAPATH }}/ca.pem", dest: "{{ CAPATH }}/ca.pem"  }
-#  when: cfsssl
 - name: fetch gencert to server
   fetch:
     src: "{{ item.src }}"

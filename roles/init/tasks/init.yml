@@ -19,6 +19,11 @@
   shell: swapoff -a && sysctl -w vm.swappiness=0 && sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
 - name: 添加EPEL仓库
   yum: name=epel-release state=latest update_cache=yes
+  register: yumresult
+  until: yumresult.rc == 0
+  retries: 5
+  delay: 5
+
 - name: install yum util
   yum: name=yum-utils update_cache=yes state=latest
 - name: yum-complete-transaction
@@ -42,6 +47,10 @@
       - ntp
     state: latest
     update_cache: yes
+
+- name: set hosts
+  template: src=hosts.j2 dest=/etc/hosts
+  tags: sedHost
 
 - name: start ntp
   service: name=ntpd state=restarted enabled=yes

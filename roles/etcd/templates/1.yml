@@ -3,9 +3,10 @@
       vars: 
           AAAA: "{% for host in groups['haproxy'] %}{{ host }} {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}:6443{%- if not loop.last -%}\n{% endif %}{% endfor %}"
           BBBB: "{{ inventory_hostname  }}{{ cfsssl }}"
+          CCCC: "{% for host in groups['all'] %}{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }} {{ host }}{% endfor %}"
       tasks:
         - debug: msg="{{ AAAA }}"
-        - debug: msg="{{ BBBB }}"
+        - debug: msg="{{ CCCC }}"
 #        - name: scp etcd.tar.gz to dest
 #          copy: 'src=1.yml dest=/tmp/2.yml '
 #

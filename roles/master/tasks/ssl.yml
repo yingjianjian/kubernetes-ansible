@@ -1,0 +1,81 @@
+- name: create kubernetes dir
+  file:
+    path: "{{ KUBERNETESPATH }}/pki"
+    state: directory
+- block:
+  - name: copy master_ssl.cnf to master
+    template:
+      src: master_ssl.j2
+      dest: "{{ KUBERNETESPATH }}/master_ssl.cnf"
+  
+  #kube-apiserver的CA证书和私钥文件
+  - name: create CA key
+    shell: openssl genrsa -out ca.key 2048
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+    
+  
+  - name: create CA crt cert
+    shell: openssl req -x509 -new -nodes -key ca.key -subj "/CN=masterVip" -days {{ DAY }} -out ca.crt
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  - name: create server key
+    shell: openssl genrsa -out server.key 2048
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  - name: create server csr
+    shell: openssl req -new -key server.key -subj "/CN=masterVip" -config ../master_ssl.cnf -out server.csr
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  - name: create server crt
+    shell: openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ DAY }} -extensions v3_req -extfile ../master_ssl.cnf -out server.crt
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  
+  - name: create cs_client.key
+    shell: openssl genrsa -out cs_client.key 2048
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  #设置kube-controller-manager相关证书
+  - name: create cs_client.key
+    shell: openssl genrsa -out cs_client.key 2048
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  - name: create cs_client.csr
+    shell: openssl req -new -key cs_client.key -subj "/CN=masterVip" -out cs_client.csr
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  
+  - name: create cs_client.cr
+    shell: openssl x509 -req -in cs_client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out cs_client.crt -days {{ DAY }}
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+  when: cfsssl
+
+- name: scp CA pem to dest
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0744
+    force: yes
+  with_items:
+    - { src: "{{ KUBERNETESPATH }}/pki/ca.crt", dest: "{{ KUBERNETESPATH }}/pki/ca.crt"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/server.key", dest: "{{ KUBERNETESPATH }}/pki/server.key"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/server.crt", dest: "{{ KUBERNETESPATH }}/pki/server.crt"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/cs_client.crt", dest: "{{ KUBERNETESPATH }}/pki/cs_client.crt"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/cs_client.key", dest: "{{ KUBERNETESPATH }}/pki/cs_client.key"  }
