@@ -3,6 +3,15 @@
     path: "{{ KUBELETEDIR }}/pki"
     state: directory
 
+- name: bootstrap
+  copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: yes
+  with_items:
+    - { src: "/etc/kubernetes/bootstrap.kubeconfig" , dest: "/etc/kubernetes/bootstrap.kubeconfig" }
+    - { src: "/etc/kubernetes/pki/token.csv" , dest: "/etc/kubernetes/pki/token.csv" }
+
 - name: catere CNI dir
   file:
     path: /opt/cni/bin
@@ -40,6 +49,9 @@
   template:
     src: kubelet-conf.yml.j2
     dest: "{{ KUBERNETESPATH }}/kubelet-conf.yml"
+
+- name: 授权kube-proxy 
+  shell: "kubectl create clusterrolebinding admin-proxy-{{ inventory_hostname  }} --clusterrole=admin --user=system:node:{{ inventory_hostname  }}"
 
 - name: daemon-reload
   shell: systemctl daemon-reload

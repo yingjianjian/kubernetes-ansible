@@ -89,6 +89,17 @@
     args:
       chdir: "{{ KUBERNETESPATH }}/pki"
       executable: /bin/bash
+  #sa pub
+  - name: sa.key sa.pub
+    shell: |
+      openssl genrsa -out  sa.key 2048
+      openssl ecparam -name secp521r1 -genkey -noout -out sa.key
+      openssl ec -in sa.key -outform PEM -pubout -out sa.pub
+      openssl req -new -sha256 -key sa.key -subj "/CN=system:kube-controller-manager" -out sa.csr
+      openssl x509 -req -in sa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ DAY }}  -extfile ../master_ssl.cnf -out sa.crt
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
 
   - name: out admin kubeconfig
     shell: |
@@ -135,6 +146,9 @@
     force: yes
   with_items:
     - { src: "{{ KUBERNETESPATH }}/pki/ca.crt", dest: "{{ KUBERNETESPATH }}/pki/ca.crt"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/ca.key", dest: "{{ KUBERNETESPATH }}/pki/ca.key"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/sa.key", dest: "{{ KUBERNETESPATH }}/pki/sa.key"  }
+    - { src: "{{ KUBERNETESPATH }}/pki/sa.pub", dest: "{{ KUBERNETESPATH }}/pki/sa.pub"  }
     - { src: "{{ KUBERNETESPATH }}/pki/server.key", dest: "{{ KUBERNETESPATH }}/pki/server.key"  }
     - { src: "{{ KUBERNETESPATH }}/pki/server.crt", dest: "{{ KUBERNETESPATH }}/pki/server.crt"  }
     - { src: "{{ KUBERNETESPATH }}/pki/cs_client.crt", dest: "{{ KUBERNETESPATH }}/pki/cs_client.crt"  }

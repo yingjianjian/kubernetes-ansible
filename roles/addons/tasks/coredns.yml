@@ -1,0 +1,20 @@
+- name: docker pull dns image
+  shell: "docker pull {{ DNSIMAGE }}"
+  register: DNSresult
+  until: DNSresult.rc == 0
+  retries: 5
+  delay: 5
+
+- block:
+
+  - name: copy dns template
+    template:
+      src: coredns.yml.j2
+      dest: "{{ KUBERNETESPATH }}/coredns.yml" 
+
+  - name: apply DNS
+    shell: "kubectl apply -f {{ KUBERNETESPATH }}/coredns.yml"
+
+  when: cfsssl
+
+

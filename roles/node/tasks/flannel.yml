@@ -1,0 +1,17 @@
+- name: docker pull flannel image
+  shell: "docker pull {{ FLANNELIMAGE }}"
+  register: flannelresult
+  until: flannelresult.rc == 0
+  retries: 5
+  delay: 5
+- block:
+  - name: copy template to master1
+    template:
+      src: kube-flannel.yml.j2
+      dest: "{{ KUBERNETESPATH }}/kube-flannel.yml" 
+  - name: apply kube-flannel.yml
+    shell: kubectl apply -f kube-flannel.yml
+    args:
+      chdir: "{{ KUBERNETESPATH }}"
+      executable: /bin/bash
+  when: cfsssl

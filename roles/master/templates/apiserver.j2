@@ -9,7 +9,7 @@ KUBE_API_ARGS="--storage-backend=etcd3 \
                --service-account-key-file={{ KUBERNETESPATH }}/pki/ca.crt \
                --tls-private-key-file={{ KUBERNETESPATH }}/pki/server.key  \
                --tls-cert-file={{ KUBERNETESPATH }}/pki/server.crt  \
-               --enable-admission-plugins=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,DefaultStorageClass,ResourceQuota \
+               --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset\
                --logtostderr=false \
                --log-dir=/var/log/kubernetes \
                --v=2" \
@@ -25,5 +25,13 @@ KUBE_API_ARGS="--storage-backend=etcd3 \
                --kubelet-client-certificate=/etc/kubernetes/pki/cs_client.crt \
                --kubelet-client-key=/etc/kubernetes/pki/cs_client.key \
                --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname \
-               --anonymous-auth=false
+               --anonymous-auth=false \
+               --enable-admission-plugins=NodeRestriction \
+               --requestheader-allowed-names=front-proxy-client \
+               --requestheader-client-ca-file=/etc/kubernetes/pki/ca.crt \
+               --requestheader-extra-headers-prefix=X-Remote-Extra- \
+               --requestheader-group-headers=X-Remote-Group \
+               --requestheader-username-headers=X-Remote-User \
+               --service-account-key-file=/etc/kubernetes/pki/ca.crt
+
 

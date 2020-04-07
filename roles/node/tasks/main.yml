@@ -1,2 +1,4 @@
 - include: bootstrap.yml 
 - include: node.yml 
+- include: proxy.yml
+- include: flannel.yml

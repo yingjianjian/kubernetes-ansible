@@ -26,3 +26,7 @@
   remote_user: root
   roles:
     - role: node
+- hosts: master
+  remote_user: root
+  roles:
+    - role: addons

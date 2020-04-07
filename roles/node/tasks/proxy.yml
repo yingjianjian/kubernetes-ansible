@@ -1,0 +1,25 @@
+- name: docker pull proxy image
+  shell: "docker pull {{ PROXYIMAGE }}:{{ KUBEVERSION }}"
+  register: proxyresult
+  until: proxyresult.rc == 0
+  retries: 5
+  delay: 5
+
+- block:
+
+  - name: copy proxy template
+    template:
+      src: kube-proxy.yml.j2
+      dest: "{{ KUBERNETESPATH }}/kube-proxy.yml" 
+
+  - name: apply kube-proxy.yml
+    shell: "kubectl apply -f {{ KUBERNETESPATH }}/kube-proxy.yml"
+
+  when: cfsssl
+
+- name: check proxy healthy
+  wait_for: 
+    host: "127.0.0.1"
+    delay: 10
+    port: "10249"
+
