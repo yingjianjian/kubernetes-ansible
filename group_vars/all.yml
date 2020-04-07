@@ -1,6 +1,0 @@
-VIP: '10.30.30.38'
-VIP_NETMASK: '24'
-INTERFACE_NAME: ens192
-REGISTRY: "https://registry.docker-cn.com"
-DOCKERDIR: "/data/docker"
-CAPATH: /etc/etcd/ssl/
