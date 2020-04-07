@@ -1,2 +1,0 @@
-- name: Rolead etcd
-  service: name=etcd state=reloaded

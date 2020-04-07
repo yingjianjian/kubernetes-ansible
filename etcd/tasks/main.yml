@@ -1,4 +1,0 @@
-- include: init.yml
-- include: etcd.yml
-- include: cfssl.yml
-- include: config.yml
