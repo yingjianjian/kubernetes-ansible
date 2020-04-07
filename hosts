@@ -10,3 +10,5 @@ master-3 ansible_ssh_host=10.30.30.37 ansible_connection=ssh ansible_ssh_user=ro
 master-1 ansible_ssh_host=10.30.30.35 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=true
 master-2 ansible_ssh_host=10.30.30.36 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
 master-3 ansible_ssh_host=10.30.30.37 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian cfsssl=false
+[node:children]
+master

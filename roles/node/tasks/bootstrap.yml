@@ -1,0 +1,9 @@
+- name: bootstrap
+  script: bootstrap.sh 
+  when: cfsssl
+
+- name: scp bootstrap to node
+  copy:
+    src: /etc/kubernetes/bootstrap.kubeconfig
+    dest: /etc/kubernetes/bootstrap.kubeconfig 
+  tags: tobootstrap

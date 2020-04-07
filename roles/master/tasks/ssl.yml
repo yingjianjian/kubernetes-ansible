@@ -2,6 +2,10 @@
   file:
     path: "{{ KUBERNETESPATH }}/pki"
     state: directory
+- name: create token csf
+  file:
+    path: "{{ KUBERNETESPATH }}/pki/token.csv"
+    state: touch
 - block:
   - name: copy master_ssl.cnf to master
     template:
@@ -17,7 +21,7 @@
     
   
   - name: create CA crt cert
-    shell: openssl req -x509 -new -nodes -key ca.key -subj "/CN=masterVip" -days {{ DAY }} -out ca.crt
+    shell: openssl req -x509 -new -nodes -key ca.key -subj "/CN=mastervip" -days {{ DAY }} -out ca.crt
     args:
       chdir: "{{ KUBERNETESPATH }}/pki"
       executable: /bin/bash
@@ -29,7 +33,7 @@
       executable: /bin/bash
   
   - name: create server csr
-    shell: openssl req -new -key server.key -subj "/CN=masterVip" -config ../master_ssl.cnf -out server.csr
+    shell: openssl req -new -key server.key -subj "/CN=mastervip" -config ../master_ssl.cnf -out server.csr
     args:
       chdir: "{{ KUBERNETESPATH }}/pki"
       executable: /bin/bash
@@ -55,7 +59,7 @@
       executable: /bin/bash
   
   - name: create cs_client.csr
-    shell: openssl req -new -key cs_client.key -subj "/CN=masterVip" -out cs_client.csr
+    shell: openssl req -new -key cs_client.key -subj "/CN=mastervip" -out cs_client.csr
     args:
       chdir: "{{ KUBERNETESPATH }}/pki"
       executable: /bin/bash
@@ -64,6 +68,62 @@
     shell: openssl x509 -req -in cs_client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out cs_client.crt -days {{ DAY }}
     args:
       chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+
+
+  # admin ssl kubeconfig
+  - name: openssl genrsa -out  admin.key 2048
+    shell: openssl genrsa -out  admin.key 2048
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+
+  - name: openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr
+    shell: openssl req -new -key admin.key -subj "/CN=kubernetes-admin/O=system:masters" -out admin.csr
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+
+  - name: out admin.crt
+    shell: openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days {{ DAY }} -extfile ../master_ssl.cnf -out admin.crt
+    args:
+      chdir: "{{ KUBERNETESPATH }}/pki"
+      executable: /bin/bash
+
+  - name: out admin kubeconfig
+    shell: |
+      CLUSTER_NAME="kubernetes"
+      KUBE_USER="kubernetes-admin"
+      KUBE_CERT="admin"
+      KUBE_CONFIG="admin.kubeconfig"
+      
+      # 设置集群参数
+      kubectl config set-cluster ${CLUSTER_NAME} \
+        --certificate-authority=/etc/kubernetes/pki/ca.crt \
+        --embed-certs=true \
+        --server=https://{{VIP}}:8443 \
+        --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+      
+      # 设置客户端认证参数
+      kubectl config set-credentials ${KUBE_USER} \
+        --client-certificate=/etc/kubernetes/pki/${KUBE_CERT}.crt \
+        --client-key=/etc/kubernetes/pki/${KUBE_CERT}.key \
+        --embed-certs=true \
+        --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+      
+      # 设置上下文参数
+      kubectl config set-context ${KUBE_USER}@${CLUSTER_NAME} \
+        --cluster=${CLUSTER_NAME} \
+        --user=${KUBE_USER} \
+        --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+      
+      # 设置当前使用的上下文
+      kubectl config use-context ${KUBE_USER}@${CLUSTER_NAME} --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+      
+      # 查看生成的配置文件
+      kubectl config view --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
+    args:
+      chdir: "{{ KUBERNETESPATH }}"
       executable: /bin/bash
   when: cfsssl
 
@@ -79,3 +139,4 @@
     - { src: "{{ KUBERNETESPATH }}/pki/server.crt", dest: "{{ KUBERNETESPATH }}/pki/server.crt"  }
     - { src: "{{ KUBERNETESPATH }}/pki/cs_client.crt", dest: "{{ KUBERNETESPATH }}/pki/cs_client.crt"  }
     - { src: "{{ KUBERNETESPATH }}/pki/cs_client.key", dest: "{{ KUBERNETESPATH }}/pki/cs_client.key"  }
+    - { src: "{{ KUBERNETESPATH }}/admin.kubeconfig", dest: "/root/.kube/config"  }

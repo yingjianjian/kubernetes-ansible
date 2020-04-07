@@ -3,4 +3,4 @@
 {% for host in groups['all'] %}
 {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }} {{ host }}
 {% endfor %}
-{{ VIP }} masterVip
+{{ VIP }} mastervip

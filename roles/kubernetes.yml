@@ -22,3 +22,7 @@
   remote_user: root
   roles:
     - role: master
+- hosts: node
+  remote_user: root
+  roles:
+    - role: node
