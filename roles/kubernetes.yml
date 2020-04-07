@@ -1,23 +1,23 @@
-#- hosts: all
-#  remote_user: root
-#  roles:
-#    - role: init
-#- hosts: etcd
-#  remote_user: root
-#  roles:
-#    - role: etcd
-#- hosts: all
-#  remote_user: root
-#  roles:
-#    - role: docker
-#- hosts: haproxy
-#  remote_user: root
-#  roles:
-#    - role: haproxy
-#- hosts: master
-#  remote_user: root
-#  roles:
-#    - role: keepalived
+- hosts: all
+  remote_user: root
+  roles:
+    - role: init
+- hosts: etcd
+  remote_user: root
+  roles:
+    - role: etcd
+- hosts: all
+  remote_user: root
+  roles:
+    - role: docker
+- hosts: haproxy
+  remote_user: root
+  roles:
+    - role: haproxy
+- hosts: master
+  remote_user: root
+  roles:
+    - role: keepalived
 - hosts: master
   remote_user: root
   roles:

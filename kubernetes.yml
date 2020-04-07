@@ -1,5 +1,0 @@
-- hosts: etcd
-  remote_user: root
-  roles:
-    - role: etcd
-

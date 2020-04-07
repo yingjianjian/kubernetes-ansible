@@ -18,14 +18,16 @@
 - name: swap  off
   shell: swapoff -a && sysctl -w vm.swappiness=0 && sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
 - name: 添加EPEL仓库
-  yum: name=epel-release state=latest update_cache=yes
+  get_url:
+    url: http://mirrors.aliyun.com/repo/epel-7.repo
+    dest: /etc/yum.repos.d/epel.repo
+
+- name: install yum util
+  yum: name=yum-utils update_cache=yes  state=latest
   register: yumresult
   until: yumresult.rc == 0
   retries: 5
   delay: 5
-
-- name: install yum util
-  yum: name=yum-utils update_cache=yes state=latest
 - name: yum-complete-transaction
   shell: yum-complete-transaction --cleanup-only
 - name: yum basic util install
@@ -43,11 +45,13 @@
       - libseccomp
       - sysstat
       - conntrack
-      - unzip
       - ntp
     state: latest
     update_cache: yes
-
+  register: yumresult1
+  until: yumresult1.rc == 0
+  retries: 5
+  delay: 5
 - name: set hosts
   template: src=hosts.j2 dest=/etc/hosts
   tags: sedHost
