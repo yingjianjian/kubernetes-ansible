@@ -26,5 +26,6 @@
    + master：安装kube-apiserver,kube-controller-manager,kube-scheduler
    + node: 安装kube-proxy kubelet
    + addods: 安装kube-dns
+   + addnode: 第一次部署集群不需要执行  后续新增节点需要单独执行这个模块
 + group_vars:  群组变量  kubernetes 里的所有变量都在这个目录里定义
 + hosts: 主机inventory  定义不同主机组对应不同roles
