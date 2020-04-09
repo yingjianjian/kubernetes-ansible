@@ -6,6 +6,8 @@
 >部署集群类型：二进制kubernetes v17.3 + haproxy + keepalived + etcd+bootstrap自动签署
 
 ## 使用方法
+    
+    将二进制包放到指定目录kubernetes-server-linux-amd64.tar.gz 和 kubernetes-node-linux-amd64.tar.gz 放到master 和 node 以及addnode的files目录下
 
     修改hosts文件根据不同组放入不同的主机ip，格式：主机名 ansible_ssh_host=ip地址 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian
 
