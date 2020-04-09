@@ -6,6 +6,7 @@
 >部署集群类型：二进制kubernetes v17.3 + haproxy + keepalived + etcd+bootstrap自动签署
 
 ##使用方法
+
     修改hosts文件根据不同组放入不同的主机ip，格式：主机名 ansible_ssh_host=ip地址 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_pass=yingjianjian
 
     带有cfsssl=true代表master-1的主机 主要用来生成各类证书 已经kubectl的操作
