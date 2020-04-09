@@ -1,0 +1,57 @@
+- name: catere kubelet dir
+  file:
+    path: "{{ KUBELETEDIR }}/pki"
+    state: directory
+
+- name: bootstrap
+  copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: yes
+  with_items:
+    - { src: "/etc/kubernetes/bootstrap.kubeconfig" , dest: "/etc/kubernetes/bootstrap.kubeconfig" }
+    - { src: "/etc/kubernetes/pki/token.csv" , dest: "/etc/kubernetes/pki/token.csv" }
+
+- name: catere CNI dir
+  file:
+    path: /opt/cni/bin
+    state: directory
+
+- name: catere /etc/kubelet.d
+  file:
+    path: /etc/kubelet.d
+    state: directory
+
+- name: scp node server to dest
+  unarchive:
+    src: kubernetes-node-linux-amd64.tar.gz
+    dest: /tmp/
+    copy: yes
+
+- name: scp cni to dest
+  unarchive:
+    src: cni-plugins-amd64-v0.7.5.tgz
+    dest: /opt/cni/bin
+    copy: yes
+
+- name: mv node bin to dest
+  shell: cp -rf  kubectl kubelet  kube-proxy  /usr/bin/
+  args:
+    chdir: "/tmp/kubernetes/node/bin"
+    executable: /bin/bash
+
+- name: scp kubelet service template to dest
+  template:
+    src: kubelet.service.j2 
+    dest: /usr/lib/systemd/system/kubelet.service 
+
+- name: scp kubelet config template to dest
+  template:
+    src: kubelet-conf.yml.j2
+    dest: "{{ KUBERNETESPATH }}/kubelet-conf.yml"
+
+- name: daemon-reload
+  shell: systemctl daemon-reload
+
+- name: restart kubelet
+  service: name=kubelet state=restarted enabled=yes 
