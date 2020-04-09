@@ -2,6 +2,11 @@
   file:
     path: "{{ KUBELETEDIR }}/pki"
     state: directory
+- name: catere kubernetes dir
+  file:
+    path: "{{ KUBERNETESPATH }}/pki"
+    state: directory
+
 
 - name: bootstrap
   copy: 
