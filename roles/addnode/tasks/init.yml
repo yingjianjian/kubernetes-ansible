@@ -1,0 +1,68 @@
+- name: 关闭firewalld NetworkManager dnsmasq - CentOS
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  with_items:
+    - firewalld
+    - NetworkManager
+    - dnsmasq
+  ignore_errors: True
+- name: SELINUX disabled
+  selinux: state=disabled
+- name: sed selinux config
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+    line: 'SELINUX=disabled'
+- name: swap  off
+  shell: swapoff -a && sysctl -w vm.swappiness=0 && sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
+- name: 添加EPEL仓库
+  get_url:
+    url: http://mirrors.aliyun.com/repo/epel-7.repo
+    dest: /etc/yum.repos.d/epel.repo
+
+- name: install yum util
+  yum: name=yum-utils update_cache=yes  state=latest
+  register: yumresult
+  until: yumresult.rc == 0
+  retries: 5
+  delay: 5
+- name: yum-complete-transaction
+  shell: yum-complete-transaction --cleanup-only
+- name: yum basic util install
+  yum:
+    name:
+      - device-mapper-persistent-data
+      - lvm2
+      - conntrack-tools
+      - nfs-utils
+      - ipvsadm
+      - unzip
+      - net-tools
+      - ipset
+      - socat
+      - libseccomp
+      - sysstat
+      - conntrack
+      - ntp
+    state: latest
+    update_cache: yes
+  register: yumresult1
+  until: yumresult1.rc == 0
+  retries: 5
+  delay: 5
+- name: set hosts
+  template: src=hosts.j2 dest=/etc/hosts
+  tags: sedHost
+
+- name: start ntp
+  service: name=ntpd state=restarted enabled=yes
+
+- name: check stat
+  shell: ntpstat
+  register: result
+  until: result.rc == 0
+  retries: 5
+  delay: 10
+

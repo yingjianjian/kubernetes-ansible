@@ -2,6 +2,16 @@
   file:
     path: "{{ KUBELETEDIR }}/pki"
     state: directory
+- name: catere kubernetes dir
+  file:
+    path: "{{ KUBERNETESPATH }}/pki"
+    state: directory
+
+
+- name: scp ca.crt to dest
+  copy:
+    src: /etc/kubernetes/pki/ca.crt
+    dest: /etc/kubernetes/pki/ca.crt
 
 - name: bootstrap
   copy: 
@@ -55,3 +65,4 @@
 
 - name: restart kubelet
   service: name=kubelet state=restarted enabled=yes 
+  tags: kubelet

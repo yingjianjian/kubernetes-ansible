@@ -1,4 +1,3 @@
-KUBELETEDIR: /var/lib/kubelet
 FLANNELTYPE: 'vxlan'
 FLANNELIMAGE: 'registry.cn-hangzhou.aliyuncs.com/isys/flannel:v0.12.0-amd64'
 

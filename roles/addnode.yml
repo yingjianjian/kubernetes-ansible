@@ -1,0 +1,4 @@
+- hosts: addnode
+  remote_user: root
+  roles:
+    - role: addnode

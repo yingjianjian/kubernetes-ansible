@@ -1,1 +1,4 @@
+- include: init.yml
+- include: sys.yml
+- include: docker.yml
 - include: node.yml 
