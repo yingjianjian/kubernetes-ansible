@@ -14,7 +14,7 @@ data:
       acceptContentTypes: ""
       burst: 10
       contentType: application/vnd.kubernetes.protobuf
-      kubeconfig: /etc/kubernetes/kubeconfig.yaml
+      kubeconfig: /var/lib/kube-proxy/kubeconfig.conf
       qps: 5
     clusterCIDR: {{ PODIP }}
     configSyncPeriod: 15m0s
@@ -41,7 +41,27 @@ data:
       SupportIPVSProxyMode: true
     oomScoreAdj: -999
     portRange: ""
+    resourceContainer: /kube-proxy
     udpIdleTimeout: 250ms
+  kubeconfig.conf: |-
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        server: https://{{ VIP }}:8443
+      name: default
+    contexts:
+    - context:
+        cluster: default
+        namespace: default
+        user: default
+      name: default
+    current-context: default
+    users:
+    - name: default
+      user:
+        tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -52,7 +72,7 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: system:kube-proxy
   labels:
@@ -126,9 +146,6 @@ spec:
         securityContext:
           privileged: true
         volumeMounts:
-        - name: host-time
-          mountPath: /etc/localtime
-          readOnly: true
         - mountPath: /var/lib/kube-proxy
           name: kube-proxy
         - mountPath: /run/xtables.lock
@@ -136,17 +153,17 @@ spec:
         - mountPath: /lib/modules
           name: lib-modules
           readOnly: true
-        - mountPath: /etc/kubernetes/
-          name: kubeconfig
+        - name: host-time
+          mountPath: /etc/localtime
           readOnly: true
       volumes:
-      - name: host-time
-        hostPath:
-          path: /etc/localtime
       - configMap:
           defaultMode: 420
           name: kube-proxy
         name: kube-proxy
+      - name: host-time
+        hostPath:
+          path: /etc/localtime
       - hostPath:
           path: /run/xtables.lock
           type: FileOrCreate
@@ -155,6 +172,3 @@ spec:
           path: /lib/modules
           type: ""
         name: lib-modules
-      - name: kubeconfig
-        hostPath:
-          path: /etc/kubernetes/  

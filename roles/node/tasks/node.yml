@@ -50,9 +50,6 @@
     src: kubelet-conf.yml.j2
     dest: "{{ KUBERNETESPATH }}/kubelet-conf.yml"
 
-- name: 授权kube-proxy 
-  shell: "kubectl create clusterrolebinding admin-proxy-{{ inventory_hostname  }} --clusterrole=admin --user=system:node:{{ inventory_hostname  }}"
-
 - name: daemon-reload
   shell: systemctl daemon-reload
 
