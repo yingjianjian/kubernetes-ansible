@@ -12,6 +12,11 @@
     - { src: "/etc/kubernetes/bootstrap.kubeconfig" , dest: "/etc/kubernetes/bootstrap.kubeconfig" }
     - { src: "/etc/kubernetes/pki/token.csv" , dest: "/etc/kubernetes/pki/token.csv" }
 
+- name: scp ca.crt to dest
+  copy:
+    src: /etc/kubernetes/pki/ca.crt
+    dest: /etc/kubernetes/pki/ca.crt
+
 - name: catere CNI dir
   file:
     path: /opt/cni/bin
