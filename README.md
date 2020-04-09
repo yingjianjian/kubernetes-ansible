@@ -2,6 +2,7 @@
 
 **基于ansible实现kubernetes集群部署**
 >ansible-playbook (2.9.6)
+
 >部署集群类型：二进制kubernetes v17.3 + haproxy + keepalived + etcd+bootstrap自动签署
 
 ###使用方法
