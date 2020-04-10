@@ -1,8 +1,4 @@
 - name: bootstrap
-  script: bootstrap.sh 
-  when: cfsssl
-
-- name: bootstrap
   template:
     src: bootstrap.sh.j2
     dest: /tmp/bootstrap.sh
