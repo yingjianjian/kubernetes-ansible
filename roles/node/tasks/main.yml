@@ -1,3 +1,4 @@
+- include: clean.yml
 - include: bootstrap.yml 
 - include: node.yml 
 - include: proxy.yml
