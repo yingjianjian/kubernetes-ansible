@@ -1,2 +1,0 @@
-DAY: '10000'
-APIETCDCACLUSTER: "{% for host in groups['etcd'] %}https://{{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}:2379{%- if not loop.last -%},{% endif %}{% endfor %}"
