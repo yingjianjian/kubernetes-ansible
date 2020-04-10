@@ -20,7 +20,7 @@ KUBE_CONFIG="bootstrap.kubeconfig"
 kubectl config set-cluster ${CLUSTER_NAME} \
   --certificate-authority=/etc/kubernetes/pki/ca.crt \
   --embed-certs=true \
-  --server=https://10.30.30.38:8443\
+  --server=https://{{ VIP }}:8443\
   --kubeconfig=/etc/kubernetes/${KUBE_CONFIG}
 
 # 设置上下文参数

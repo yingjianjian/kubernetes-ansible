@@ -2,3 +2,12 @@
   script: bootstrap.sh 
   when: cfsssl
 
+- name: bootstrap
+  template:
+    src: bootstrap.sh.j2
+    dest: /tmp/bootstrap.sh
+  when: cfsssl
+
+- name: bootstrap
+  shell: sh /tmp/bootstrap.sh
+  when: cfsssl
