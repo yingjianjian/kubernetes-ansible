@@ -1,0 +1,13 @@
+---
+- shell: rm -rf /etc/kubernetes/pki/kubelet*
+  name: clean kubelet
+
+
+- name: check kubeconfig.yaml  file
+  stat: path=/etc/kubernetes/kubeconfig.yaml
+  register: result
+
+- shell: rm -rf /etc/kubernetes/kubeconfig.yaml
+  name: clean kubeconfig.yaml
+  when: result.stat.exists
+
